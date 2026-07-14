@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Home
+{% endblock title %}
+
+{% block content %}
+<h1 class="text-center text-white mt-4">This the HeartView Form </h1>
+</style>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">
+        Predict
+    </button>
+</form>
+{% if prediction %}
+<div class="alert alert-info mt-3">
+    <h4>{{ prediction }}</h4>
+</div>
+{% endif %}
+{% endblock content %}
