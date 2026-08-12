@@ -1,19 +1,24 @@
 {% extends "layout.html" %}
 
-{% block title %}{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
-<h1 class="text-center text-white mt-4">This the Register page</h1>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
+<section class="card card-narrow">
+    <h1 class="card-title">Register</h1>
+    <p class="card-text">Create an account to use the prediction model.</p>
+    <form method="POST" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
 
-    {% if form.errors %}
-        <div class="alert alert-danger">
-            {{ form.errors }}
+        {% if form.errors %}
+            <div class="alert alert-error">
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="button button-primary button-block">Register</button>
         </div>
-    {% endif %}
-
-    <button type="submit" class="btn btn-primary">Register</button>
-</form>
+    </form>
+</section>
 {% endblock %}

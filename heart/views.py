@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from .models import HeartPrediction
 from .forms import HeartForm,UserRegistrationForm
 from django.contrib.auth import login

@@ -5,5 +5,13 @@ About
 {% endblock title %}
 
 {% block content %}
-<h1 class="text-center text-white mt-4">This the About page</h1>
+<h1 class="page-title">About</h1>
+<p class="page-subtitle">About this project</p>
+
+<section class="card">
+    <h2 class="card-title">Heart Disease Prediction</h2>
+    <p class="card-text">This Django application uses a trained machine learning model to predict the likelihood of
+    heart disease based on clinical input values such as age, blood pressure, cholesterol and ECG results.</p>
+    <a class="button button-primary" href="{% url 'all_heart_view' %}">Try the prediction</a>
+</section>
 {% endblock content %}

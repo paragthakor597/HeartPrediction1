@@ -1,0 +1,19 @@
+
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+Main Project
+{% endblock title %}
+
+{% block content %}
+<section class="card">
+    <p class="card-eyebrow">Main Project: Model</p>
+    <h2 class="card-title">Heart Disease Prediction</h2>
+    <p class="card-text">Predict heart disease using patient health information.</p>
+    <a href="{% url 'Home' %}" class="button button-primary heart-app-button">
+        &#10084;&#65039; Open Heart Prediction
+    </a>
+    <img src="{% static 'images/heart.png' %}" alt="Heart" height="200" width="400">
+</section>
+{% endblock content %}

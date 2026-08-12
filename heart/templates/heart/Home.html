@@ -5,5 +5,14 @@ Home
 {% endblock title %}
 
 {% block content %}
-<h1 class="text-center text-white mt-4">This the Home page</h1>
+<section class="hero">
+    <h1>Heart Disease Prediction</h1>
+    <p>A machine learning project that estimates the risk of heart disease from basic clinical measurements.</p>
+</section>
+
+<section class="card">
+    <h2 class="card-title">Main Project: Model</h2>
+    <p class="card-text">Enter the patient details in the prediction form and get an instant result from the trained model.</p>
+    <a class="button button-primary" href="{% url 'all_heart_view' %}">Heart Prediction</a>
+</section>
 {% endblock content %}

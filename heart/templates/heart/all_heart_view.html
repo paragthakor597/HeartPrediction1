@@ -1,22 +1,30 @@
 {% extends "layout.html" %}
+{% load static %}
 
 {% block title %}
-Home
+Heart Prediction
 {% endblock title %}
 
 {% block content %}
-<h1 class="text-center text-white mt-4">This the HeartView Form </h1>
-</style>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">
-        Predict
-    </button>
-</form>
+<img src="{% static 'images/heart.png' %}" height="100" width="250" alt="Heart">
+<h1 class="page-title">Heart Prediction</h1>
+<p class="page-subtitle">Fill in every field, then submit to run the model.</p>
+
+<section class="card">
+    <form method="POST" class="form">
+        {% csrf_token %}
+        <div class="form-grid">
+            {{ form.as_p }}
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="button button-primary">Predict</button>
+        </div>
+    </form>
+</section>
+
 {% if prediction %}
-<div class="alert alert-info mt-3">
-    <h4>{{ prediction }}</h4>
+<div class="alert">
+    <h2>{{ prediction }}</h2>
 </div>
 {% endif %}
 {% endblock content %}

@@ -1,19 +1,24 @@
 {% extends "layout.html" %}
 
-{% block title %}{% endblock %}
+{% block title %}Logout{% endblock %}
 
 {% block content %}
-<h1 class="text-center text-white mt-4">This the Logout page</h1>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
+<section class="card card-narrow">
+    <h1 class="card-title">Logout</h1>
+    <p class="card-text">Click below to sign out of your account.</p>
+    <form method="POST" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
 
-    {% if form.errors %}
-        <div class="alert alert-danger">
-            {{ form.errors }}
+        {% if form.errors %}
+            <div class="alert alert-error">
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="button button-danger button-block">Logout</button>
         </div>
-    {% endif %}
-
-    <button type="submit" class="btn btn-primary">Logout</button>
-</form>
+    </form>
+</section>
 {% endblock %}

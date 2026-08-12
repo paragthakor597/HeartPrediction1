@@ -20,11 +20,11 @@ class HeartPrediction(models.Model):
     sex = models.CharField(max_length=1, choices=SEX_CHOICES)
 
     CHEST_CHOICES = [
-        ('ATA', 'ATA'),
-        ('NAP', 'NAP'),
-        ('ASY', 'ASY'),
-        ('TA', 'TA'),
-    ] 
+        ('ATA', 'Atypical Angina (Chest pain that is not typical of heart disease)'),
+        ('NAP', 'Non-Anginal Pain (Chest pain that is generally not related to heart disease)'),
+        ('ASY', 'Asymptomatic (No chest pain or symptoms)'),
+        ('TA', 'Typical Angina (Typical chest pain related to the heart)'),
+    ]
     help_text="Select your chest pain type"
     chest_pain_type = models.CharField(max_length=3, choices=CHEST_CHOICES)
 
@@ -32,32 +32,32 @@ class HeartPrediction(models.Model):
     cholesterol = models.IntegerField()
 
     FASTING_CHOICES = [
-        (0, 'No'),
-        (1, 'Yes'),
+    (0, 'No (Fasting Blood Sugar is normal)'),
+    (1, 'Yes (Fasting Blood Sugar is high)'),
     ]
     fasting_bs = models.IntegerField(choices=FASTING_CHOICES)
 
     ECG_CHOICES = [
-        ('Normal', 'Normal'),
-        ('ST', 'ST'),
-        ('LVH', 'LVH'),
+        ('Normal', 'Normal — Normal ECG result'),
+        ('ST', 'ST — ST-T wave abnormality'),
+        ('LVH', 'LVH — Thickening of the left ventricle muscle'),
     ]
     resting_ecg = models.CharField(max_length=10, choices=ECG_CHOICES)
 
     max_hr = models.IntegerField()
 
     ANGINA_CHOICES = [
-        ('N', 'No'),
-        ('Y', 'Yes'),
+        ('N', 'No — No chest pain during exercise'),
+        ('Y', 'Yes — Chest pain occurs during exercise'),
     ]
     exercise_angina = models.CharField(max_length=1, choices=ANGINA_CHOICES)
 
     oldpeak = models.FloatField()
 
     SLOPE_CHOICES = [
-        ('Up', 'Up'),
-        ('Flat', 'Flat'),
-        ('Down', 'Down'),
+        ('Up', 'Up — ST segment rises upward'),
+        ('Flat', 'Flat — ST segment remains relatively flat'),
+        ('Down', 'Down — ST segment slopes downward'),
     ]
     st_slope = models.CharField(max_length=10, choices=SLOPE_CHOICES)
     
