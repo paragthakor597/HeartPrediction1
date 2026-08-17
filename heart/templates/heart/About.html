@@ -5,13 +5,40 @@ About
 {% endblock title %}
 
 {% block content %}
-<h1 class="page-title">About</h1>
-<p class="page-subtitle">About this project</p>
+<div class="section-head">
+    <h1 class="page-title">About</h1>
+    <p class="page-subtitle">About this project</p>
+</div>
 
 <section class="card">
+    <span class="card-icon card-icon-danger">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 21s-7.5-4.7-9.5-9A5.3 5.3 0 0 1 12 6.6a5.3 5.3 0 0 1 9.5 5.4c-2 4.3-9.5 9-9.5 9z"/>
+        </svg>
+    </span>
     <h2 class="card-title">Heart Disease Prediction</h2>
-    <p class="card-text">This Django application uses a trained machine learning model to predict the likelihood of
-    heart disease based on clinical input values such as age, blood pressure, cholesterol and ECG results.</p>
+    <p class="card-text">This Django application uses a trained machine learning model to predict the
+    likelihood of heart disease based on clinical input values such as age, blood pressure,
+    cholesterol and ECG results. The model was trained on the standard heart disease dataset
+    and is served through a scikit-learn pipeline.</p>
     <a class="button button-primary" href="{% url 'all_heart_view' %}">Try the prediction</a>
 </section>
+
+<div class="card-grid">
+    <div class="card card-hover">
+        <h3 class="card-title">Technology</h3>
+        <p class="card-text">Django for the web application, scikit-learn for the trained
+           pipeline, and pandas for preparing the input data.</p>
+    </div>
+    <div class="card card-hover">
+        <h3 class="card-title">Inputs</h3>
+        <p class="card-text">Eleven clinical values including age, sex, chest pain type,
+           resting blood pressure, cholesterol and ST slope.</p>
+    </div>
+    <div class="card card-hover">
+        <h3 class="card-title">Disclaimer</h3>
+        <p class="card-text">Built as a college machine learning project. Results are for
+           educational purposes and are not a medical diagnosis.</p>
+    </div>
+</div>
 {% endblock content %}

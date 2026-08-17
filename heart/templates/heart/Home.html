@@ -6,13 +6,65 @@ Home
 
 {% block content %}
 <section class="hero">
+    <div class="hero-icon">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 21s-7.5-4.7-9.5-9A5.3 5.3 0 0 1 12 6.6a5.3 5.3 0 0 1 9.5 5.4c-2 4.3-9.5 9-9.5 9z"/>
+        </svg>
+    </div>
+    <p class="hero-badge">Machine Learning Project</p>
     <h1>Heart Disease Prediction</h1>
-    <p>A machine learning project that estimates the risk of heart disease from basic clinical measurements.</p>
+    <p>Estimate the risk of heart disease from routine patient health information such as
+       age, blood pressure, cholesterol and ECG results. The trained model returns a clear
+       low-risk or high-risk result in seconds.</p>
+    <div class="hero-actions">
+        <a class="button button-primary button-lg" href="{% url 'all_heart_view' %}">Start Prediction</a>
+        <a class="button button-outline button-lg" href="{% url 'About' %}">Learn More</a>
+    </div>
 </section>
 
+<div class="card-grid">
+    <div class="card card-hover">
+        <span class="card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/>
+            </svg>
+        </span>
+        <h2 class="card-title">Enter Patient Data</h2>
+        <p class="card-text">Fill in eleven standard clinical values. Every field explains
+           exactly what it is asking for.</p>
+    </div>
+
+    <div class="card card-hover">
+        <span class="card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 12h4l3 8 4-16 3 8h4"/>
+            </svg>
+        </span>
+        <h2 class="card-title">Model Analysis</h2>
+        <p class="card-text">A trained scikit-learn pipeline processes the values and
+           calculates the prediction instantly.</p>
+    </div>
+
+    <div class="card card-hover">
+        <span class="card-icon card-icon-success">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
+            </svg>
+        </span>
+        <h2 class="card-title">Clear Result</h2>
+        <p class="card-text">The outcome is shown as a colour-coded low-risk or high-risk
+           result, easy to read at a glance.</p>
+    </div>
+</div>
+
 <section class="card">
-    <h2 class="card-title">Main Project: Model</h2>
-    <p class="card-text">Enter the patient details in the prediction form and get an instant result from the trained model.</p>
+    <p class="card-eyebrow">Main Project: Model</p>
+    <h2 class="card-title">Heart Disease Prediction</h2>
+    <p class="card-text">Open the prediction form and run the trained model on patient data.</p>
     <a class="button button-primary" href="{% url 'all_heart_view' %}">Heart Prediction</a>
 </section>
 {% endblock content %}

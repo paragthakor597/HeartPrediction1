@@ -1,12 +1,25 @@
-
 {% extends "layout.html" %}
-{% load static %}
+
 
 {% block title %}
 Main Project
 {% endblock title %}
 
 {% block content %}
+<section class="hero">
+    <div class="hero-icon">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 21s-7.5-4.7-9.5-9A5.3 5.3 0 0 1 12 6.6a5.3 5.3 0 0 1 9.5 5.4c-2 4.3-9.5 9-9.5 9z"/>
+        </svg>
+    </div>
+    <h1>Heart Disease Prediction</h1>
+    <p>Predict heart disease risk using patient health information. The trained machine
+       learning model analyses eleven clinical values and returns a clear result.</p>
+    <div class="hero-actions">
+        <a class="button button-primary button-lg" href="{% url 'all_heart_view' %}">Start Prediction</a>
+    </div>
+</section>
+
 <section class="card">
     <p class="card-eyebrow">Main Project: Model</p>
     <h2 class="card-title">Heart Disease Prediction</h2>
@@ -14,6 +27,5 @@ Main Project
     <a href="{% url 'Home' %}" class="button button-primary heart-app-button">
         &#10084;&#65039; Open Heart Prediction
     </a>
-    <img src="{% static 'images/heart.png' %}" alt="Heart" height="200" width="400">
 </section>
 {% endblock content %}

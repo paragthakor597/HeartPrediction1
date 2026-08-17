@@ -22,7 +22,12 @@
 <body>
 <header class="site-header">
   <nav class="nav">
-    <a class="nav-brand" href="{% url 'Home' %}">Heart Prediction</a>
+    <a class="nav-brand" href="{% url 'Home' %}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 21s-7.5-4.7-9.5-9A5.3 5.3 0 0 1 12 6.6a5.3 5.3 0 0 1 9.5 5.4c-2 4.3-9.5 9-9.5 9z"/>
+      </svg>
+      HeartCare Predict
+    </a>
 
     <input type="checkbox" id="nav-toggle" class="nav-toggle">
     <label for="nav-toggle" class="nav-toggle-label" aria-label="Menu">
@@ -32,8 +37,8 @@
     <div class="nav-menu">
       <ul class="nav-links">
         <li><a href="{% url 'Home' %}">Home</a></li>
+        <li><a href="{% url 'all_heart_view' %}">Prediction</a></li>
         <li><a href="{% url 'About' %}">About</a></li>
-        <li><a href="{% url 'all_heart_view' %}">Heart Prediction</a></li>
       </ul>
 
       <div class="nav-actions">
@@ -62,8 +67,22 @@
     {% endblock %}
 </main>
 
-<footer class="site-footer">
-  <p>Heart Prediction &middot; Machine Learning Project</p>
+<footer class="site-footer" id="contact">
+  <div class="footer-inner">
+    <div class="footer-block">
+      <h3>HeartCare Predict</h3>
+      <p>A machine learning project that estimates heart disease risk from patient
+         health information. For educational use only - not a medical diagnosis.</p>
+    </div>
+    <div class="footer-block">
+      <h3>Contact</h3>
+      <p>Email: paragthakor597@gmail.com</p>
+      <p>Project: Django + Scikit-learn</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>Heart Prediction &middot; Machine Learning Project</p>
+  </div>
 </footer>
 
 {% comment %} <script>
