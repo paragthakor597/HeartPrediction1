@@ -46,7 +46,7 @@ class HeartForm(forms.ModelForm):
             'resting_ecg': forms.Select(attrs={'class': 'form-select'}),
             'max_hr': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Enter maximum heart rate achieved (60-220 bpm)'}),
             'exercise_angina': forms.Select(attrs={'class': 'form-select'}),
-            'oldpeak': forms.NumberInput(attrs={'class': 'form-control','placeholder': "Enter the ST depression value from your ECG test (0.0-7.0)."}),
+            'oldpeak': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Enter a value between 0.0 and 6.2'}),
             'st_slope': forms.Select(attrs={'class': 'form-select'}),
         }
 
