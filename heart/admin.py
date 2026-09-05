@@ -1,5 +1,8 @@
 from django.contrib import admin
 from .models import HeartPrediction
 
-# Register your models here.
-admin.site.register(HeartPrediction)
+
+@admin.register(HeartPrediction)
+class HeartPredictionAdmin(admin.ModelAdmin):
+    list_display = ("user", "result", "age", "sex", "created_at")
+    list_filter = ("result", "sex")
