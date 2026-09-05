@@ -5,12 +5,12 @@ from django.contrib.auth.models import User
 
 class HeartPrediction(models.Model):
     user = models.ForeignKey(
-    User,
-    on_delete=models.CASCADE,
-    null=True,
-    blank=True
-)
-    
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
     age = models.IntegerField()
 
     SEX_CHOICES = [
@@ -25,15 +25,14 @@ class HeartPrediction(models.Model):
         ('ASY', 'Asymptomatic (No chest pain or symptoms)'),
         ('TA', 'Typical Angina (Typical chest pain related to the heart)'),
     ]
-    help_text="Select your chest pain type"
     chest_pain_type = models.CharField(max_length=3, choices=CHEST_CHOICES)
 
     resting_bp = models.IntegerField()
     cholesterol = models.IntegerField()
 
     FASTING_CHOICES = [
-    (0, 'No (Fasting Blood Sugar is normal)'),
-    (1, 'Yes (Fasting Blood Sugar is high)'),
+        (0, 'No (Fasting Blood Sugar is normal)'),
+        (1, 'Yes (Fasting Blood Sugar is high)'),
     ]
     fasting_bs = models.IntegerField(choices=FASTING_CHOICES)
 
@@ -67,7 +66,7 @@ class HeartPrediction(models.Model):
         (1, 'Risk Detected'),
     ]
     result = models.IntegerField(choices=RESULT_CHOICES, null=True, blank=True)
-    risk_reasons = models.JSONField(default=list, blank=True)     # list of risk factors
+    risk_reasons = models.JSONField(default=list, blank=True)  # list of risk factors
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
