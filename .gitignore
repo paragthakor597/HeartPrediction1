@@ -31,3 +31,7 @@ local_settings.py
 .idea/
 *.swp
 .DS_Store
+
+#csv
+heart.csv
+
