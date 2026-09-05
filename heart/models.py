@@ -62,7 +62,11 @@ class HeartPrediction(models.Model):
     st_slope = models.CharField(max_length=10, choices=SLOPE_CHOICES)
 
     # --- prediction output ---
-    result = models.IntegerField(null=True, blank=True)          # 0 = no risk, 1 = risk
+    RESULT_CHOICES = [
+        (0, 'No Risk'),
+        (1, 'Risk Detected'),
+    ]
+    result = models.IntegerField(choices=RESULT_CHOICES, null=True, blank=True)
     risk_reasons = models.JSONField(default=list, blank=True)     # list of risk factors
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
