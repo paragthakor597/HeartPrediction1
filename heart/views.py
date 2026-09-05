@@ -1,7 +1,10 @@
 from django.shortcuts import render,redirect
 from .models import HeartPrediction
 from .forms import HeartForm,UserRegistrationForm
+from .reasons import get_risk_reasons
+from .report import build_report_pdf
 from django.contrib.auth import login
+from django.http import HttpResponse, Http404
 import joblib
 import pandas as pd
 import os
@@ -17,15 +20,15 @@ def Home(request):
 
 def all_heart_view(request):
     prediction = None
+    reasons = []
+    prediction_id = None
+
     if request.method == 'POST':
-        form = HeartForm(request.POST) 
+        form = HeartForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            obj = form.save(commit=False)
-            if request.user.is_authenticated:
-                obj.user = request.user
-            obj.save()
-            input_data = pd.DataFrame([{  
+
+            input_data = pd.DataFrame([{
                     "Age": data["age"],
                     "Sex": data["sex"],
                     "ChestPainType": data["chest_pain_type"],
@@ -38,21 +41,45 @@ def all_heart_view(request):
                     "Oldpeak": data["oldpeak"],
                     "ST_Slope": data["st_slope"]
             }])
-            result = pipeline.predict(input_data)
-            print("predicton",result)
 
-        if result[0] == 1:
-            prediction = "Heart Disease Risk Detected"
-        else:
-            prediction = "No Heart Disease Risk"
+            result = int(pipeline.predict(input_data)[0])
+            print("predicton", result)
+
+            if result == 1:
+                prediction = "Heart Disease Risk Detected"
+                reasons = get_risk_reasons(data)
+            else:
+                prediction = "No Heart Disease Risk"
+
+            obj = form.save(commit=False)
+            if request.user.is_authenticated:
+                obj.user = request.user
+            obj.result = result
+            obj.risk_reasons = reasons
+            obj.save()
+            prediction_id = obj.id
     else:
         form = HeartForm()
-         
+
     return render(request, 'heart/all_heart_view.html', {
-    'form': form,
-    'prediction': prediction if request.method == "POST" and form.is_valid() else None
-})
-    
+        'form': form,
+        'prediction': prediction,
+        'reasons': reasons,
+        'prediction_id': prediction_id,
+    })
+
+
+def download_report(request, pk):
+    try:
+        obj = HeartPrediction.objects.get(pk=pk)
+    except HeartPrediction.DoesNotExist:
+        raise Http404("Report not found")
+
+    pdf_bytes = build_report_pdf(obj)
+    response = HttpResponse(pdf_bytes, content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="heart_report_{pk}.pdf"'
+    return response
+
 def register(request):
     if request.method == "POST":
         print(request.POST)
@@ -73,4 +100,3 @@ def register(request):
 
 def About(request):
     return render(request, "heart/About.html")
-        

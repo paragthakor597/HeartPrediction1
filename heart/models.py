@@ -60,7 +60,11 @@ class HeartPrediction(models.Model):
         ('Down', 'Down — ST segment slopes downward'),
     ]
     st_slope = models.CharField(max_length=10, choices=SLOPE_CHOICES)
-    
+
+    # --- prediction output ---
+    result = models.IntegerField(null=True, blank=True)          # 0 = no risk, 1 = risk
+    risk_reasons = models.JSONField(default=list, blank=True)     # list of risk factors
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return f"{self.user}"
