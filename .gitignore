@@ -35,3 +35,7 @@ local_settings.py
 #csv
 heart.csv
 
+
+# Data dumps (contain password hashes and session data)
+data_backup.json
+data*.json
