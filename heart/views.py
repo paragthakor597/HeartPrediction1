@@ -21,7 +21,10 @@ def all_heart_view(request):
         form = HeartForm(request.POST) 
         if form.is_valid():
             data = form.cleaned_data
-            form.save()
+            obj = form.save(commit=False)
+            if request.user.is_authenticated:
+                obj.user = request.user
+            obj.save()
             input_data = pd.DataFrame([{  
                     "Age": data["age"],
                     "Sex": data["sex"],
