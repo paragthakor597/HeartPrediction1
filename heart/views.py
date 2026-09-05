@@ -5,6 +5,7 @@ from .reasons import get_risk_reasons
 from .report import build_report_pdf
 from django.contrib.auth import login
 from django.http import HttpResponse, Http404
+from django.utils.text import slugify
 import joblib
 import pandas as pd
 import os
@@ -59,7 +60,13 @@ def all_heart_view(request):
             obj.save()
             prediction_id = obj.id
     else:
-        form = HeartForm()
+        # Returning user: start the form with whatever they filled in last time.
+        initial = {}
+        if request.user.is_authenticated:
+            last = HeartPrediction.objects.filter(user=request.user).order_by('-id').first()
+            if last:
+                initial = {f: getattr(last, f) for f in HeartForm.Meta.fields}
+        form = HeartForm(initial=initial)
 
     return render(request, 'heart/all_heart_view.html', {
         'form': form,
@@ -76,8 +83,10 @@ def download_report(request, pk):
         raise Http404("Report not found")
 
     pdf_bytes = build_report_pdf(obj)
+    # Name the file after the user, falling back to "guest" for anonymous entries.
+    name = slugify(obj.user.username) if obj.user else "guest"
     response = HttpResponse(pdf_bytes, content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename="heart_report_{pk}.pdf"'
+    response["Content-Disposition"] = f'attachment; filename="heart_report_{name}.pdf"'
     return response
 
 def register(request):
@@ -92,7 +101,7 @@ def register(request):
             print("User saved:", user.username)
             return redirect('Home')
         else:
-            print(form.errors)   # 👈 ye add karo
+            print(form.errors)
     else:
         form = UserRegistrationForm()
 

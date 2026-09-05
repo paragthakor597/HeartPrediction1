@@ -43,7 +43,7 @@ Heart Prediction
         </div>
         {% endif %}
 
-        {% if prediction_id and reasons %}
+        {% if prediction_id %}
         <p><a class="button button-primary" href="{% url 'download_report' prediction_id %}">Download PDF Report</a></p>
         {% endif %}
     </div>

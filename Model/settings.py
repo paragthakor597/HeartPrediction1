@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
 from pathlib import Path
+from urllib.parse import unquote, urlparse
 
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -77,10 +79,28 @@ WSGI_APPLICATION = "Model.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# PostgreSQL only -- the connection string lives in .env, never in this file.
+# Example: postgresql://user:password@host.neon.tech/dbname?sslmode=require
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
+
+if not DATABASE_URL:
+    raise ImproperlyConfigured(
+        "DATABASE_URL is not set. Copy .env.example to .env and paste your "
+        "PostgreSQL connection string into it."
+    )
+
+_db = urlparse(DATABASE_URL)
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": _db.path.lstrip("/"),
+        "USER": unquote(_db.username or ""),
+        "PASSWORD": unquote(_db.password or ""),
+        "HOST": _db.hostname or "",
+        "PORT": str(_db.port or 5432),
+        "OPTIONS": {"sslmode": os.environ.get("DB_SSLMODE", "require")},
+        "CONN_MAX_AGE": 600,
     }
 }
 
