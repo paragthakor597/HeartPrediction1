@@ -6,6 +6,8 @@ from .report import build_report_pdf
 from django.contrib.auth import login
 from django.http import HttpResponse, Http404
 from django.utils.text import slugify
+from django.utils import timezone
+from datetime import datetime
 import joblib
 import pandas as pd
 import os
@@ -17,7 +19,28 @@ pipeline = joblib.load(
 
 
 def Home(request):
-    return render(request, "heart/Home.html")
+    # Read the previous visit time from our cookie, then stamp the current one.
+    last_visit = None
+    raw = request.COOKIES.get(settings.LAST_VISIT_COOKIE_NAME)
+    if raw:
+        try:
+            last_visit = datetime.fromisoformat(raw)
+        except ValueError:
+            pass
+
+    response = render(request, "heart/Home.html", {
+        'last_visit': last_visit,
+        'session_expiry': request.session.get_expiry_date(),
+    })
+    response.set_cookie(
+        settings.LAST_VISIT_COOKIE_NAME,
+        timezone.now().isoformat(),
+        max_age=settings.LAST_VISIT_COOKIE_AGE,
+        httponly=True,
+        samesite="Lax",
+        secure=not settings.DEBUG,
+    )
+    return response
 
 def all_heart_view(request):
     prediction = None
@@ -59,6 +82,10 @@ def all_heart_view(request):
             obj.risk_reasons = reasons
             obj.save()
             prediction_id = obj.id
+
+            # Keep a per-session tally of predictions and the latest outcome.
+            request.session['prediction_count'] = request.session.get('prediction_count', 0) + 1
+            request.session['last_result'] = prediction
     else:
         # Returning user: start the form with whatever they filled in last time.
         initial = {}
@@ -73,6 +100,8 @@ def all_heart_view(request):
         'prediction': prediction,
         'reasons': reasons,
         'prediction_id': prediction_id,
+        'prediction_count': request.session.get('prediction_count', 0),
+        'last_result': request.session.get('last_result'),
     })
 
 

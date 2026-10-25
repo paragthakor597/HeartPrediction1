@@ -12,6 +12,14 @@ Heart Prediction
     <p class="page-subtitle">Fill in every field, then submit to run the model.</p>
 </div>
 
+{% if prediction_count %}
+<div class="alert">
+    <h3>This session</h3>
+    <p>You have run {{ prediction_count }} prediction{{ prediction_count|pluralize }}.
+       Latest result: <strong>{{ last_result }}</strong>.</p>
+</div>
+{% endif %}
+
 <section class="card">
     <form method="POST" action="#result" class="form">
         {% csrf_token %}
