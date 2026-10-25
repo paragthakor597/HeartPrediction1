@@ -437,6 +437,7 @@ input[type="number"] {
   box-shadow: var(--shadow);
   padding: 1.5rem 1.75rem;
   margin-bottom: 1.5rem;
+  scroll-margin-top: 5rem;
   animation: fade-up .35s ease both;
 }
 
@@ -451,6 +452,7 @@ input[type="number"] {
 }
 .result-title { margin: 0 0 .25rem; font-size: 1.3rem; }
 .result-text { margin: 0; color: var(--muted); font-size: .92rem; }
+.result-reasons { margin-top: .75rem; }
 
 /* Low risk - green */
 .result-low { border-left-color: var(--success); background: var(--success-soft); }
