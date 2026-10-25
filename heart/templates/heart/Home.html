@@ -12,6 +12,26 @@ Home
         </svg>
     </div>
     <p class="hero-badge">Machine Learning Project</p>
+    {% if last_visit %}
+    <p>Welcome back! Your last visit was {{ last_visit|date:"j M Y, H:i" }} UTC.</p>
+    {% endif %}
+    <p>Session expires in <strong id="session-timer" data-expiry="{{ session_expiry|date:'c' }}">--:--:--</strong></p>
+    <script>
+        // Count down to the session expiry time sent by the server.
+        (function () {
+            var el = document.getElementById('session-timer');
+            var expiry = new Date(el.dataset.expiry).getTime();
+            function pad(n) { return String(n).padStart(2, '0'); }
+            function tick() {
+                var left = Math.max(0, Math.floor((expiry - Date.now()) / 1000));
+                el.textContent = left
+                    ? pad(Math.floor(left / 3600)) + ':' + pad(Math.floor(left % 3600 / 60)) + ':' + pad(left % 60)
+                    : 'Session expired';
+            }
+            tick();
+            setInterval(tick, 1000);
+        })();
+    </script>
     <h1>Heart Disease Prediction</h1>
     <p>Estimate the risk of heart disease from routine patient health information such as
        age, blood pressure, cholesterol and ECG results. The trained model returns a clear

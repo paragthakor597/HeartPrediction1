@@ -149,3 +149,30 @@ LOGIN_URL = '/accounts/login'
 
 LOGIN_REDIRECT_URL = '/heart/'
 LOGOUT_REDIRECT_URL = '/heart/'
+
+
+# Sessions
+# https://docs.djangoproject.com/en/6.0/topics/http/sessions/
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"  # stored in the django_session table
+SESSION_COOKIE_NAME = "heart_sessionid"
+SESSION_COOKIE_AGE = 60 * 60 * 24  # 1 day, in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_SAVE_EVERY_REQUEST = True  # each request pushes the expiry forward (sliding timeout)
+SESSION_COOKIE_HTTPONLY = True  # JavaScript cannot read the session cookie
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = not DEBUG  # HTTPS-only outside development
+
+
+# Cookies
+# https://docs.djangoproject.com/en/6.0/ref/settings/#csrf-cookie-name
+
+CSRF_COOKIE_NAME = "heart_csrftoken"
+CSRF_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SECURE = not DEBUG
+
+# Our own "last visit" cookie set by the Home view.
+LAST_VISIT_COOKIE_NAME = "heart_last_visit"
+LAST_VISIT_COOKIE_AGE = 60 * 60 * 24 * 30  # 30 days
