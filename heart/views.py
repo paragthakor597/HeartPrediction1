@@ -32,6 +32,12 @@ def Home(request):
         'last_visit': last_visit,
         'session_expiry': request.session.get_expiry_date(),
     })
+
+    # Logged out (logout redirects here): clear the cookie instead of stamping a new visit.
+    if not request.user.is_authenticated:
+        response.delete_cookie(settings.LAST_VISIT_COOKIE_NAME, samesite="Lax")
+        return response
+
     response.set_cookie(
         settings.LAST_VISIT_COOKIE_NAME,
         timezone.now().isoformat(),
