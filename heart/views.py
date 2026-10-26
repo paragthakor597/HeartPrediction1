@@ -3,6 +3,8 @@ from .models import HeartPrediction
 from .forms import HeartForm,UserRegistrationForm
 from .reasons import get_risk_reasons
 from .report import build_report_pdf
+from .serializers import HeartPredictionSerializer
+from rest_framework import viewsets
 from django.contrib.auth import login
 from django.http import HttpResponse, Http404
 from django.utils.text import slugify
@@ -16,6 +18,30 @@ from django.conf import settings
 pipeline = joblib.load(
     os.path.join(settings.BASE_DIR, "saved_model", "heart_pipeline.pkl")
 )
+
+
+def run_prediction(data):
+    """Run the ML model on the 11 clinical values -> (result, risk_reasons).
+
+    Shared by the website form and the REST API so both predict the same way.
+    """
+    input_data = pd.DataFrame([{
+            "Age": data["age"],
+            "Sex": data["sex"],
+            "ChestPainType": data["chest_pain_type"],
+            "RestingBP": data["resting_bp"],
+            "Cholesterol": data["cholesterol"],
+            "FastingBS": data["fasting_bs"],
+            "RestingECG": data["resting_ecg"],
+            "MaxHR": data["max_hr"],
+            "ExerciseAngina": data["exercise_angina"],
+            "Oldpeak": data["oldpeak"],
+            "ST_Slope": data["st_slope"]
+    }])
+
+    result = int(pipeline.predict(input_data)[0])
+    reasons = get_risk_reasons(data) if result == 1 else []
+    return result, reasons
 
 
 def Home(request):
@@ -32,6 +58,12 @@ def Home(request):
         'last_visit': last_visit,
         'session_expiry': request.session.get_expiry_date(),
     })
+
+    # Logged out (logout redirects here): clear the cookie instead of stamping a new visit.
+    if not request.user.is_authenticated:
+        response.delete_cookie(settings.LAST_VISIT_COOKIE_NAME, samesite="Lax")
+        return response
+
     response.set_cookie(
         settings.LAST_VISIT_COOKIE_NAME,
         timezone.now().isoformat(),
@@ -52,26 +84,10 @@ def all_heart_view(request):
         if form.is_valid():
             data = form.cleaned_data
 
-            input_data = pd.DataFrame([{
-                    "Age": data["age"],
-                    "Sex": data["sex"],
-                    "ChestPainType": data["chest_pain_type"],
-                    "RestingBP": data["resting_bp"],
-                    "Cholesterol": data["cholesterol"],
-                    "FastingBS": data["fasting_bs"],
-                    "RestingECG": data["resting_ecg"],
-                    "MaxHR": data["max_hr"],
-                    "ExerciseAngina": data["exercise_angina"],
-                    "Oldpeak": data["oldpeak"],
-                    "ST_Slope": data["st_slope"]
-            }])
-
-            result = int(pipeline.predict(input_data)[0])
-            print("predicton", result)
+            result, reasons = run_prediction(data)
 
             if result == 1:
                 prediction = "Heart Disease Risk Detected"
-                reasons = get_risk_reasons(data)
             else:
                 prediction = "No Heart Disease Risk"
 
@@ -138,3 +154,23 @@ def register(request):
 
 def About(request):
     return render(request, "heart/About.html")
+
+
+class HeartPredictionViewSet(viewsets.ModelViewSet):
+    """REST API for HeartPrediction: list, create, retrieve, update, delete."""
+    serializer_class = HeartPredictionSerializer
+
+    def get_queryset(self):
+        # Each user only ever sees their own predictions.
+        return HeartPrediction.objects.filter(user=self.request.user).order_by('-id')
+
+    def perform_create(self, serializer):
+        result, reasons = run_prediction(serializer.validated_data)
+        serializer.save(user=self.request.user, result=result, risk_reasons=reasons)
+
+    def perform_update(self, serializer):
+        # A PATCH may send only some fields: save them first, then re-predict from the full record.
+        obj = serializer.save()
+        data = {f: getattr(obj, f) for f in HeartForm.Meta.fields}
+        obj.result, obj.risk_reasons = run_prediction(data)
+        obj.save()

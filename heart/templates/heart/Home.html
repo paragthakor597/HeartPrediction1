@@ -12,6 +12,7 @@ Home
         </svg>
     </div>
     <p class="hero-badge">Machine Learning Project</p>
+    {% if user.is_authenticated %}
     {% if last_visit %}
     <p>Welcome back! Your last visit was {{ last_visit|date:"j M Y, H:i" }} UTC.</p>
     {% endif %}
@@ -32,6 +33,7 @@ Home
             setInterval(tick, 1000);
         })();
     </script>
+    {% endif %}
     <h1>Heart Disease Prediction</h1>
     <p>Estimate the risk of heart disease from routine patient health information such as
        age, blood pressure, cholesterol and ECG results. The trained model returns a clear

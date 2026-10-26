@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'heart',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -176,3 +177,16 @@ CSRF_COOKIE_SECURE = not DEBUG
 # Our own "last visit" cookie set by the Home view.
 LAST_VISIT_COOKIE_NAME = "heart_last_visit"
 LAST_VISIT_COOKIE_AGE = 60 * 60 * 24 * 30  # 30 days
+
+
+# REST API
+# https://www.django-rest-framework.org/api-guide/settings/
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",  # only logged-in users
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",  # always plain JSON, even in a browser
+    ],
+}
