@@ -672,6 +672,28 @@ input[type="number"] {
 }
 .card-narrow .form-actions { border-top: 0; padding-top: 0; margin-top: 1.25rem; }
 
+/* ===== Unit inside an input ===== */
+.input-unit { position: relative; display: block; }
+.form .input-unit input { padding-right: 4.5rem; }
+.input-unit-label {
+  position: absolute;
+  right: .85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: .85rem;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* ===== Predict button while the model runs ===== */
+.button-heart { display: none; }
+#predict-button.is-loading { cursor: progress; opacity: .9; }
+#predict-button.is-loading .button-heart {
+  display: inline-block;
+  animation: heartbeat .8s ease-in-out infinite;
+}
+
 /* ===== Prediction result ===== */
 .result {
   display: flex;
@@ -770,6 +792,12 @@ input[type="number"] {
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.07); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.25); }
+  60% { transform: scale(.95); }
 }
 
 /* Respect users who prefer reduced motion */
