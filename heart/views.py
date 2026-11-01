@@ -7,6 +7,8 @@ from .report_reader import read_report, ReportReadError
 from .serializers import HeartPredictionSerializer
 from rest_framework import viewsets
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponse, Http404
 from django.utils.text import slugify
 from django.utils import timezone
@@ -166,6 +168,40 @@ def download_report(request, pk):
     response = HttpResponse(pdf_bytes, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="heart_report_{name}.pdf"'
     return response
+
+HISTORY_PAGE_SIZE = 10
+HISTORY_CHART_POINTS = 30
+
+
+@login_required
+def history(request):
+    """The logged-in user's past predictions: summary, trend charts and a paginated list."""
+    predictions = HeartPrediction.objects.filter(user=request.user).order_by('-id')
+    total = predictions.count()
+
+    page = Paginator(predictions, HISTORY_PAGE_SIZE).get_page(request.GET.get('page'))
+
+    # Oldest -> newest for the charts. Some old rows have no created_at, so the
+    # charts space points evenly and only show the date where there is one.
+    chart_rows = [
+        {
+            'date': p.created_at.strftime('%d %b %Y') if p.created_at else '',
+            'bp': p.resting_bp,
+            'chol': p.cholesterol,
+            'hr': p.max_hr,
+            'risk': p.result == 1,
+        }
+        for p in reversed(predictions[:HISTORY_CHART_POINTS])
+    ]
+
+    return render(request, 'heart/history.html', {
+        'page': page,
+        'total': total,
+        'risk_count': predictions.filter(result=1).count(),
+        'latest': predictions.first(),
+        'chart_rows': chart_rows if total >= 2 else None,
+    })
+
 
 def register(request):
     if request.method == "POST":

@@ -40,6 +40,9 @@
       <ul class="nav-links">
         <li><a href="{% url 'Home' %}">Home</a></li>
         <li><a href="{% url 'all_heart_view' %}">Prediction</a></li>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'history' %}">My History</a></li>
+        {% endif %}
         <li><a href="{% url 'About' %}">About</a></li>
       </ul>
 
