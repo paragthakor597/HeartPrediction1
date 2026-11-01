@@ -3,7 +3,9 @@ djangorestframework==3.18.3
 joblib==1.5.3
 numpy==2.5.1
 pandas==3.0.3
+Pillow==12.3.0
 psycopg[binary]==3.3.4
+pytesseract==0.3.13
 python-dotenv==1.2.3
 reportlab==5.0.1
 scikit-learn==1.8.0
