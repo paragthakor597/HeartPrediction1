@@ -21,8 +21,34 @@ Heart Prediction
 {% endif %}
 
 <section class="card">
-    <form method="POST" action="#result" class="form">
+    <form method="POST" action="#result" class="form" enctype="multipart/form-data">
         {% csrf_token %}
+
+        <div class="report-scan">
+            <input type="file" name="report_image" id="report_image" accept="image/*"
+                   class="file-input" onchange="
+                       document.getElementById('report_image_name').textContent =
+                           this.files.length ? this.files[0].name : 'No photo chosen';
+                       document.getElementById('scan_btn').disabled = !this.files.length;">
+            <label class="file-pick" for="report_image"
+                   title="Upload a photo of your blood test, ECG or treadmill report">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <path d="M17 8 12 3 7 8"/><path d="M12 3v13"/>
+                </svg>
+                Choose photo
+            </label>
+            <span class="file-name" id="report_image_name">No photo chosen</span>
+            <!-- formnovalidate: scanning fills the empty fields in, so the browser must not
+                 demand them before this submit goes through -->
+            <button type="submit" id="scan_btn" class="button scan-btn" disabled formnovalidate
+                    title="Fills this form with the values printed on your report. Does not predict.">Scan report</button>
+        </div>
+
+        {% if scan_notice %}<p class="scan-notice">{{ scan_notice }}</p>{% endif %}
+        {% if scan_error %}<p class="field-error">{{ scan_error }}</p>{% endif %}
+
         <div class="form-grid">
             {% for field in form %}
             <p>

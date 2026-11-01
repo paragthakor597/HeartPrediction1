@@ -3,6 +3,7 @@ from .models import HeartPrediction
 from .forms import HeartForm,UserRegistrationForm
 from .reasons import get_risk_reasons
 from .report import build_report_pdf
+from .report_reader import read_report, ReportReadError
 from .serializers import HeartPredictionSerializer
 from rest_framework import viewsets
 from django.contrib.auth import login
@@ -78,8 +79,27 @@ def all_heart_view(request):
     prediction = None
     reasons = []
     prediction_id = None
+    scan_notice = None
+    scan_error = None
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.FILES.get('report_image'):
+        # Scanning only fills the form in; the user checks the values and submits.
+        typed = {k: v for k, v in request.POST.items() if k != 'csrfmiddlewaretoken' and v}
+        try:
+            found = read_report(request.FILES['report_image'])
+        except ReportReadError as exc:
+            found = {}
+            scan_error = str(exc)
+        else:
+            labels = [str(HeartForm().fields[name].label or name) for name in found]
+            scan_notice = (
+                "Filled in from your report: " + ", ".join(labels) +
+                ". Please check these and fill in the rest."
+                if found else
+                "No usable values were found on that report. Please fill the form in by hand."
+            )
+        form = HeartForm(initial={**typed, **found})
+    elif request.method == 'POST':
         form = HeartForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
@@ -120,6 +140,8 @@ def all_heart_view(request):
         'prediction_id': prediction_id,
         'prediction_count': request.session.get('prediction_count', 0),
         'last_result': request.session.get('last_result'),
+        'scan_notice': scan_notice,
+        'scan_error': scan_error,
     })
 
 
