@@ -59,6 +59,14 @@ FIELD_TOOLTIPS = {
     },
 }
 
+# Unit shown inside the input box, so people don't have to open the tooltip.
+FIELD_UNITS = {
+    'age': 'years',
+    'resting_bp': 'mmHg',
+    'cholesterol': 'mg/dL',
+    'max_hr': 'bpm',
+}
+
 
 class HeartForm(forms.ModelForm):
     class Meta:
@@ -96,11 +104,11 @@ class HeartForm(forms.ModelForm):
             'age': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Enter your age'}),
             'sex': forms.Select(attrs={'class': 'form-select'}),
             'chest_pain_type': forms.Select(attrs={'class': 'form-select'}),
-            'resting_bp': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Enter resting systolic BP (90-200 mmHg)'}),
-            'cholesterol': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Enter total cholesterol (100-600 mg/dL)'}),
+            'resting_bp': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Between 90 and 200'}),
+            'cholesterol': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Between 100 and 600'}),
             'fasting_bs': forms.Select(attrs={'class': 'form-select'}),
             'resting_ecg': forms.Select(attrs={'class': 'form-select'}),
-            'max_hr': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Enter maximum heart rate achieved (60-220 bpm)'}),
+            'max_hr': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Between 60 and 220'}),
             'exercise_angina': forms.Select(attrs={'class': 'form-select'}),
             'oldpeak': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Enter a value between 0.0 and 6.2'}),
             'st_slope': forms.Select(attrs={'class': 'form-select'}),
@@ -112,6 +120,10 @@ class HeartForm(forms.ModelForm):
         for name, tooltip in FIELD_TOOLTIPS.items():
             if name in self.fields:
                 self.fields[name].tooltip = tooltip
+        # Reachable in the template as field.field.unit
+        for name, unit in FIELD_UNITS.items():
+            if name in self.fields:
+                self.fields[name].unit = unit
 
 
 class UserRegistrationForm(UserCreationForm):

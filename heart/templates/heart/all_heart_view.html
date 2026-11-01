@@ -1,9 +1,7 @@
 {% extends "layout.html" %}
 {% load static %}
 
-{% block title %}
-Heart Prediction
-{% endblock title %}
+{% block title %}Heart Prediction{% endblock title %}
 
 {% block content %}
 <div class="section-head">
@@ -21,7 +19,8 @@ Heart Prediction
 {% endif %}
 
 <section class="card">
-    <form method="POST" action="#result" class="form" enctype="multipart/form-data">
+    <form method="POST" action="#result" class="form" id="heart-form"
+          enctype="multipart/form-data">
         {% csrf_token %}
 
         <div class="report-scan">
@@ -69,17 +68,52 @@ Heart Prediction
                     {% endif %}
                     {% endwith %}
                 </label>
+                {% if field.field.unit %}
+                <span class="input-unit">{{ field }}<span class="input-unit-label">{{ field.field.unit }}</span></span>
+                {% else %}
                 {{ field }}
+                {% endif %}
                 {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
                 {% if field.errors %}<span class="field-error">{{ field.errors|striptags }}</span>{% endif %}
             </p>
             {% endfor %}
         </div>
         <div class="form-actions">
-            <button type="submit" class="button button-primary button-lg">Predict</button>
+            <button type="submit" class="button button-primary button-lg" id="predict-button">
+                <svg class="button-heart" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 21s-7.5-4.7-9.5-9A5.3 5.3 0 0 1 12 6.6a5.3 5.3 0 0 1 9.5 5.4c-2 4.3-9.5 9-9.5 9z"/>
+                </svg>
+                <span class="button-label">Predict</span>
+            </button>
         </div>
     </form>
 </section>
+
+<script>
+    // Show a beating heart on the Predict button while the model runs.
+    (function () {
+        var form = document.getElementById('heart-form');
+        var button = document.getElementById('predict-button');
+        var label = button.querySelector('.button-label');
+
+        form.addEventListener('submit', function (event) {
+            // "Scan report" submits this same form but runs no prediction,
+            // so the Predict button must not claim to be analysing.
+            if (event.submitter && event.submitter.id === 'scan_btn') { return; }
+            button.classList.add('is-loading');
+            label.textContent = 'Analysing…';
+            // Disable after the submit has started, so the click still sends the form.
+            setTimeout(function () { button.disabled = true; }, 0);
+        });
+
+        // Coming back with the browser's Back button: reset the button.
+        window.addEventListener('pageshow', function () {
+            button.classList.remove('is-loading');
+            button.disabled = false;
+            label.textContent = 'Predict';
+        });
+    })();
+</script>
 
 {% if prediction %}
 <div id="result" class="result {% if prediction == 'No Heart Disease Risk' %}result-low{% else %}result-high{% endif %}">
