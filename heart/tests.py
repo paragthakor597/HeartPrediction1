@@ -72,3 +72,64 @@ class DownloadReportAccessTests(TestCase):
         self.client.login(username='bob', password='pass12345')
         response = self.client.get(self.report_url(guest_report.pk))
         self.assertEqual(response.status_code, 404)
+
+
+class HistoryPageTests(TestCase):
+    """My History lists only the logged-in user's own predictions."""
+
+    def setUp(self):
+        self.alice = User.objects.create_user('alice', password='pass12345')
+        self.bob = User.objects.create_user('bob', password='pass12345')
+        self.url = reverse('history')
+
+    def add_predictions(self, user, count, **overrides):
+        for _ in range(count):
+            HeartPrediction.objects.create(user=user, result=0, **{**SAMPLE, **overrides})
+
+    def test_anonymous_is_sent_to_login(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/accounts/login', response['Location'])
+
+    def test_empty_state_without_predictions(self):
+        self.client.force_login(self.alice)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'No predictions yet')
+        self.assertNotContains(response, 'history-data')
+
+    def test_shows_only_own_predictions(self):
+        self.add_predictions(self.alice, 1, cholesterol=211)
+        self.add_predictions(self.bob, 1, cholesterol=377)
+        self.client.force_login(self.alice)
+        response = self.client.get(self.url)
+        self.assertContains(response, '211')
+        self.assertNotContains(response, '377')
+        self.assertEqual(response.context['total'], 1)
+
+    def test_risk_count_and_latest(self):
+        self.add_predictions(self.alice, 2)
+        HeartPrediction.objects.create(user=self.alice, result=1, **SAMPLE)
+        self.client.force_login(self.alice)
+        response = self.client.get(self.url)
+        self.assertEqual(response.context['risk_count'], 1)
+        self.assertEqual(response.context['latest'].result, 1)
+
+    def test_pagination_ten_per_page(self):
+        self.add_predictions(self.alice, 12)
+        self.client.force_login(self.alice)
+        first = self.client.get(self.url)
+        second = self.client.get(self.url, {'page': 2})
+        self.assertEqual(len(first.context['page'].object_list), 10)
+        self.assertEqual(len(second.context['page'].object_list), 2)
+        self.assertContains(first, 'Page 1 of 2')
+
+    def test_charts_need_at_least_two_predictions(self):
+        self.add_predictions(self.alice, 1)
+        self.client.force_login(self.alice)
+        self.assertNotContains(self.client.get(self.url), 'id="history-data"')
+
+        self.add_predictions(self.alice, 1)
+        response = self.client.get(self.url)
+        self.assertContains(response, 'id="history-data"')
+        self.assertEqual(len(response.context['chart_rows']), 2)
