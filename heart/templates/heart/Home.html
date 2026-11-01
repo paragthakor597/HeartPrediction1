@@ -1,90 +1,123 @@
 {% extends "layout.html" %}
+{% load static %}
 
 {% block title %}Home{% endblock title %}
 
 {% block content %}
-<section class="hero">
-    <div class="hero-icon">
-        <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 21s-7.5-4.7-9.5-9A5.3 5.3 0 0 1 12 6.6a5.3 5.3 0 0 1 9.5 5.4c-2 4.3-9.5 9-9.5 9z"/>
-        </svg>
+{% if user.is_authenticated %}
+<div class="welcome-bar">
+    <p class="welcome-text">
+        <span>Welcome back, <strong>{{ user.username }}</strong></span>
+        {% if last_visit %}<span class="welcome-meta">Last visit {{ last_visit|date:"j M Y, H:i" }} UTC</span>{% endif %}
+    </p>
+    <p class="welcome-meta">Session expires in <strong id="session-timer" data-expiry="{{ session_expiry|date:'c' }}">--:--:--</strong></p>
+</div>
+<script>
+    // Count down to the session expiry time sent by the server.
+    (function () {
+        var el = document.getElementById('session-timer');
+        var expiry = new Date(el.dataset.expiry).getTime();
+        function pad(n) { return String(n).padStart(2, '0'); }
+        function tick() {
+            var left = Math.max(0, Math.floor((expiry - Date.now()) / 1000));
+            el.textContent = left
+                ? pad(Math.floor(left / 3600)) + ':' + pad(Math.floor(left % 3600 / 60)) + ':' + pad(left % 60)
+                : 'Session expired';
+        }
+        tick();
+        setInterval(tick, 1000);
+    })();
+</script>
+{% endif %}
+
+<section class="hero hero-split">
+    <div class="hero-content">
+        <p class="hero-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 21s-7.5-4.7-9.5-9A5.3 5.3 0 0 1 12 6.6a5.3 5.3 0 0 1 9.5 5.4c-2 4.3-9.5 9-9.5 9z"/>
+            </svg>
+            Machine Learning Project
+        </p>
+        <h1>Know your heart risk in under a minute</h1>
+        <p>Enter routine health values such as age, blood pressure, cholesterol and ECG results.
+           The trained model returns a clear low-risk or high-risk result, with the reasons behind it.</p>
+        <div class="hero-actions">
+            <a class="button button-primary button-lg" href="{% url 'all_heart_view' %}">Start Prediction</a>
+            <a class="button button-outline button-lg" href="{% url 'About' %}">Learn More</a>
+        </div>
     </div>
-    <p class="hero-badge">Machine Learning Project</p>
-    {% if user.is_authenticated %}
-    {% if last_visit %}
-    <p>Welcome back! Your last visit was {{ last_visit|date:"j M Y, H:i" }} UTC.</p>
-    {% endif %}
-    <p>Session expires in <strong id="session-timer" data-expiry="{{ session_expiry|date:'c' }}">--:--:--</strong></p>
-    <script>
-        // Count down to the session expiry time sent by the server.
-        (function () {
-            var el = document.getElementById('session-timer');
-            var expiry = new Date(el.dataset.expiry).getTime();
-            function pad(n) { return String(n).padStart(2, '0'); }
-            function tick() {
-                var left = Math.max(0, Math.floor((expiry - Date.now()) / 1000));
-                el.textContent = left
-                    ? pad(Math.floor(left / 3600)) + ':' + pad(Math.floor(left % 3600 / 60)) + ':' + pad(left % 60)
-                    : 'Session expired';
-            }
-            tick();
-            setInterval(tick, 1000);
-        })();
-    </script>
-    {% endif %}
-    <h1>Heart Disease Prediction</h1>
-    <p>Estimate the risk of heart disease from routine patient health information such as
-       age, blood pressure, cholesterol and ECG results. The trained model returns a clear
-       low-risk or high-risk result in seconds.</p>
-    <div class="hero-actions">
-        <a class="button button-primary button-lg" href="{% url 'all_heart_view' %}">Start Prediction</a>
-        <a class="button button-outline button-lg" href="{% url 'About' %}">Learn More</a>
+    <div class="hero-art">
+        <img src="{% static 'images/heart.png' %}" alt="Illustration of a heart with an ECG line">
     </div>
 </section>
 
-<div class="card-grid">
-    <div class="card card-hover">
-        <span class="card-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/>
-            </svg>
-        </span>
-        <h2 class="card-title">Enter Patient Data</h2>
-        <p class="card-text">Fill in eleven standard clinical values. Every field explains
-           exactly what it is asking for.</p>
+{# Numbers measured by evaluate_model.py on the held-out test set; update them if the model is retrained. #}
+<section class="stats" aria-label="Model facts">
+    <div class="stat">
+        <span class="stat-value">918</span>
+        <span class="stat-label">patient records trained on</span>
     </div>
-
-    <div class="card card-hover">
-        <span class="card-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M3 12h4l3 8 4-16 3 8h4"/>
-            </svg>
-        </span>
-        <h2 class="card-title">Model Analysis</h2>
-        <p class="card-text">A trained scikit-learn pipeline processes the values and
-           calculates the prediction instantly.</p>
+    <div class="stat">
+        <span class="stat-value">86%</span>
+        <span class="stat-label">accuracy on unseen patients</span>
     </div>
-
-    <div class="card card-hover">
-        <span class="card-icon card-icon-success">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
-            </svg>
-        </span>
-        <h2 class="card-title">Clear Result</h2>
-        <p class="card-text">The outcome is shown as a colour-coded low-risk or high-risk
-           result, easy to read at a glance.</p>
+    <div class="stat">
+        <span class="stat-value">11</span>
+        <span class="stat-label">health factors checked</span>
     </div>
-</div>
+</section>
 
-<section class="card">
-    <p class="card-eyebrow">Main Project: Model</p>
-    <h2 class="card-title">Heart Disease Prediction</h2>
-    <p class="card-text">Open the prediction form and run the trained model on patient data.</p>
-    <a class="button button-primary" href="{% url 'all_heart_view' %}">Heart Prediction</a>
+<section class="steps-section">
+    <p class="card-eyebrow">How it works</p>
+    <h2 class="steps-heading">Three simple steps</h2>
+    <ol class="steps">
+        <li class="card card-hover step">
+            <span class="step-number">1</span>
+            <span class="card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/>
+                </svg>
+            </span>
+            <h3 class="card-title">Enter your health data</h3>
+            <p class="card-text">Fill in eleven standard clinical values. Every field explains
+               exactly what it is asking for.</p>
+        </li>
+
+        <li class="card card-hover step">
+            <span class="step-number">2</span>
+            <span class="card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 12h4l3 8 4-16 3 8h4"/>
+                </svg>
+            </span>
+            <h3 class="card-title">The model analyses it</h3>
+            <p class="card-text">A trained scikit-learn pipeline processes the values and
+               calculates the prediction instantly.</p>
+        </li>
+
+        <li class="card card-hover step">
+            <span class="step-number">3</span>
+            <span class="card-icon card-icon-success">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
+                </svg>
+            </span>
+            <h3 class="card-title">Get a clear result</h3>
+            <p class="card-text">A colour-coded low-risk or high-risk result with the reasons,
+               plus a PDF report you can show your doctor.</p>
+        </li>
+    </ol>
+</section>
+
+<section class="cta">
+    <div>
+        <h2 class="cta-title">Ready to check your heart?</h2>
+        <p class="cta-text">It takes about a minute. Keep your latest blood test and ECG reports handy.</p>
+    </div>
+    <a class="button button-primary button-lg" href="{% url 'all_heart_view' %}">Start Prediction</a>
 </section>
 {% endblock content %}
