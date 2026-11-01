@@ -102,6 +102,8 @@ def all_heart_view(request):
             # Keep a per-session tally of predictions and the latest outcome.
             request.session['prediction_count'] = request.session.get('prediction_count', 0) + 1
             request.session['last_result'] = prediction
+            # Remember which reports this browser created, so guests can download their own.
+            request.session['report_ids'] = request.session.get('report_ids', []) + [obj.id]
     else:
         # Returning user: start the form with whatever they filled in last time.
         initial = {}
@@ -125,6 +127,15 @@ def download_report(request, pk):
     try:
         obj = HeartPrediction.objects.get(pk=pk)
     except HeartPrediction.DoesNotExist:
+        raise Http404("Report not found")
+
+    # Only the owner may download a report; a guest report only from the session that made it.
+    # Anyone else gets the same 404 so report IDs can't be probed.
+    if obj.user:
+        allowed = obj.user == request.user
+    else:
+        allowed = obj.id in request.session.get('report_ids', [])
+    if not allowed:
         raise Http404("Report not found")
 
     pdf_bytes = build_report_pdf(obj)
